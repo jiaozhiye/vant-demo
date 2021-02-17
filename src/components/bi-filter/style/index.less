@@ -1,0 +1,38 @@
+/*
+ * @Author: 焦质晔
+ * @Date: 2021-02-17 13:37:22
+ * @Last Modified by: 焦质晔
+ * @Last Modified time: 2021-02-17 16:07:07
+ */
+.bi-filter {
+  height: 100vh;
+  overflow: hidden;
+  background-color: #fff;
+  .van-form {
+    overflow-y: auto;
+    height: calc(100% - 64px);
+    box-sizing: border-box;
+  }
+  .van-sku-row {
+    margin: 10px 16px 0;
+  }
+  .van-sku-row__title {
+    font-weight: 600;
+    padding-bottom: 0;
+  }
+  &-row__content {
+    .van-cell {
+      padding: 10px 0;
+    }
+  }
+  &__button {
+    height: 44px;
+    padding: 10px 16px;
+    background-color: #fff;
+    display: flex;
+    justify-content: space-between;
+    .van-button {
+      width: calc(50% - 8px);
+    }
+  }
+}
