@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-06-20 10:00:00
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2021-02-17 16:29:59
+ * @Last Modified time: 2021-02-17 17:46:38
  **/
 import { xor, transform, isEqual, isObject, cloneDeep } from 'lodash-es';
 import dayjs from 'dayjs';
@@ -25,6 +25,7 @@ export default {
     this.arrayTypes = [];
     return {
       form: {}, // 表单的值
+      text: {},
       visible: {}
     };
   },
@@ -89,39 +90,51 @@ export default {
       });
       return Object.assign({}, this.initialValue, target);
     },
-    createVisible(fieldName, state = false) {
-      this.visible = Object.assign({}, this.visible, { [fieldName]: state });
+    createVisible(fieldName, val = false) {
+      this.visible = Object.assign({}, this.visible, { [fieldName]: val });
+    },
+    createText(fieldName, val) {
+      this.text = Object.assign({}, this.text, { [fieldName]: val });
     },
     CASCADER(option) {
       const { form } = this;
       const { label, fieldName, options = {}, placeholder = `请选择${label}`, disabled, onChange = noop } = option;
+      const { itemList = [] } = options;
+      const cascaderValue = form[fieldName] ? form[fieldName].slice(form[fieldName].lastIndexOf(',') + 1) : form[fieldName];
       return (
         <div>
-          <van-field readonly placeholder={placeholder} onClick={() => this.createVisible(fieldName, !0)} />
+          <van-field
+            value={this.text[fieldName]}
+            readonly
+            disabled={disabled}
+            placeholder={placeholder}
+            onClick={() => {
+              if (disabled) return;
+              this.createVisible(fieldName, !0);
+            }}
+          />
           <van-popup v-model={this.visible[fieldName]} round position="bottom" get-container="body" style={{ width: '100%' }}>
             <van-cascader
-              v-model={form[fieldName]}
+              value={cascaderValue}
               title={placeholder}
-              options={[
-                {
-                  text: '浙江省',
-                  value: '330000',
-                  children: [{ text: '杭州市', value: '330100' }]
-                },
-                {
-                  text: '江苏省',
-                  value: '320000',
-                  children: [{ text: '南京市', value: '320100' }]
-                }
-              ]}
+              options={itemList}
+              active-color="#0d74b5"
               onClose={() => this.createVisible(fieldName, !1)}
-              onFinish={this.onCascaderFinish}
+              onFinish={options => {
+                this.createVisible(fieldName, !1);
+                this.onCascaderFinish(fieldName, options);
+                onChange(this.form[fieldName]);
+              }}
             />
           </van-popup>
         </div>
       );
     },
-    onCascaderFinish() {},
+    onCascaderFinish(fieldName, { selectedOptions }) {
+      this.createText(fieldName, selectedOptions.map(option => option.text).join('/'));
+      // 级联选择器数据格式，待定
+      this.form[fieldName] = selectedOptions.map(option => option.value).join(',');
+    },
     failedHandle() {},
     createFilterItem() {
       return this.list
@@ -136,7 +149,7 @@ export default {
       return (
         <div class="bi-filter__button">
           <van-button type="default">重 置</van-button>
-          <van-button type="info">确 定</van-button>
+          <van-button type="primary">确 定</van-button>
         </div>
       );
     },

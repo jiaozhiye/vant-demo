@@ -21,15 +21,28 @@ export default {
       filterList: [
         {
           type: 'CASCADER',
-          label: '选择城市',
+          label: '所在地区',
           fieldName: 'a',
-          placeholder: '请选择所在地区'
+          placeholder: '请选择所在地区',
+          options: {
+            itemList: [
+              {
+                text: '浙江省',
+                value: '330000',
+                children: [{ text: '杭州市', value: '330100' }]
+              },
+              {
+                text: '江苏省',
+                value: '320000',
+                children: [{ text: '南京市', value: '320100' }]
+              }
+            ]
+          }
         },
         {
           type: 'CASCADER',
-          label: '选择城市',
-          fieldName: 'b',
-          placeholder: 'hello'
+          label: '所在城市',
+          fieldName: 'b'
         }
       ]
     };

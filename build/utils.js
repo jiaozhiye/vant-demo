@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-06-20 10:00:00
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2021-02-17 14:52:28
+ * @Last Modified time: 2021-02-17 17:50:14
  */
 'use strict';
 
@@ -98,7 +98,8 @@ exports.cssLoaders = function(options) {
     less: generateLoaders('less', {
       modifyVars: {
         // 直接覆盖变量
-        // ...
+        '@blue': '#0d74b5',
+        '@green': '#0d74b5'
       }
     }).concat({
       loader: 'style-resources-loader',
