@@ -7,17 +7,28 @@
       </template>
     </van-nav-bar>
     <bi-drawer v-model="visible">
-      <bi-filter :list="filterList" @submit="submitHandle" />
+      <bi-filter :list="filterList" :initialValue="initialValue" @submit="submitHandle" />
     </bi-drawer>
   </div>
 </template>
 
 <script>
+// startData|endData: (2) ["2021-02-19", "2021-02-20"]
 export default {
   name: 'Demo1',
   data() {
     return {
       visible: false,
+      initialValue: {
+        a: '320502',
+        b: [['320000'], ['320100'], ['320102']],
+        c: '320000',
+        d: ['320000', '330000'],
+        'startData|endData': ['2021-02-19', '2021-02-20'],
+        f: '2020-02',
+        g: '2020',
+        h: '2020-Q2'
+      },
       filterList: [
         {
           type: 'CASCADER',

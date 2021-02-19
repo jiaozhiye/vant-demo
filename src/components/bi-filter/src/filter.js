@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-06-20 10:00:00
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2021-02-19 14:59:22
+ * @Last Modified time: 2021-02-19 16:16:47
  **/
 import { xor, intersection, transform, isEqual, isObject, cloneDeep } from 'lodash-es';
 import dayjs from 'dayjs';
@@ -176,7 +176,9 @@ export default {
       const { form } = this;
       const { label, fieldName, options = {}, placeholder = `请选择${label}`, disabled, onChange = noop } = option;
       const { itemList = [] } = options;
-      const fieldValues = this.deepFindValues(itemList, this.form[fieldName]);
+      // const fieldValues = this.deepFindValues(itemList, this.form[fieldName]);
+      const paths = this.deppGetPath(itemList, this.form[fieldName]) || [];
+      const fieldValues = this.deepFindValues(itemList, paths.join(','));
       const cascaderValue = form[fieldName] ? form[fieldName].slice(form[fieldName].lastIndexOf(',') + 1) : form[fieldName];
       return (
         <div>
@@ -199,7 +201,8 @@ export default {
               onClose={() => this.createVisible(fieldName, !1)}
               onFinish={({ selectedOptions }) => {
                 this.createVisible(fieldName, !1);
-                this.form[fieldName] = selectedOptions.map(option => option.value).join(',');
+                // this.form[fieldName] = selectedOptions.map(option => option.value).join(',');
+                this.form[fieldName] = selectedOptions.map(option => option.value)[selectedOptions.length - 1];
                 onChange(this.form[fieldName]);
               }}
             />
@@ -632,6 +635,19 @@ export default {
         }
       });
       return result;
+    },
+    deppGetPath(arr, value) {
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i].value == value) {
+          return [value];
+        }
+        if (Array.isArray(arr[i].children)) {
+          const temp = this.deppGetPath(arr[i].children, value);
+          if (temp) {
+            return [arr[i].value, temp].flat();
+          }
+        }
+      }
     },
     deepFind(arr, mark) {
       let res = null;
