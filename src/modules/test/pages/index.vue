@@ -21,9 +21,42 @@ export default {
       filterList: [
         {
           type: 'CASCADER',
-          label: '所在地区',
+          label: '级联-单选',
           fieldName: 'a',
           placeholder: '请选择所在地区',
+          options: {
+            itemList: [
+              {
+                text: '浙江省',
+                value: '330000',
+                children: [{ text: '杭州市', value: '330100' }]
+              },
+              {
+                text: '江苏省',
+                value: '320000',
+                children: [
+                  { text: '南京市', value: '320100' },
+                  { text: '苏州市', value: '320101', children: [{ text: '大屯县', value: '330100' }] }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          type: 'MULTIPLE_CASCADER',
+          label: '级联-多选',
+          fieldName: 'a1',
+          placeholder: '请选择所在地区',
+          rows: [
+            {
+              label: '大区',
+              onChange: () => {}
+            },
+            {
+              label: '小区',
+              onChange: () => {}
+            }
+          ],
           options: {
             itemList: [
               {
@@ -45,7 +78,7 @@ export default {
         {
           type: 'SELECT',
           label: '单选',
-          fieldName: 'a1',
+          fieldName: 'a2',
           placeholder: '请选择所在地区',
           options: {
             itemList: [
@@ -63,7 +96,7 @@ export default {
         {
           type: 'MULTIPLE_SELECT',
           label: '多选',
-          fieldName: 'a2',
+          fieldName: 'a3',
           placeholder: '请选择所在地区',
           options: {
             itemList: [

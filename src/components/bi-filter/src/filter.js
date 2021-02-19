@@ -2,11 +2,12 @@
  * @Author: 焦质晔
  * @Date: 2019-06-20 10:00:00
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2021-02-19 08:01:10
+ * @Last Modified time: 2021-02-19 12:29:27
  **/
 import { xor, transform, isEqual, isObject, cloneDeep } from 'lodash-es';
 import dayjs from 'dayjs';
 import SelectPanel from './select-panel';
+import TabHeader from './tab-header';
 
 const noop = () => {};
 
@@ -23,10 +24,9 @@ export default {
     }
   },
   data() {
-    this.arrayTypes = ['RANGE_DATE', 'MULTIPLE_SELECT'];
+    this.arrayTypes = ['RANGE_DATE', 'MULTIPLE_SELECT', 'MULTIPLE_CASCADER'];
     return {
       form: {}, // 表单的值
-      text: {},
       visible: {}
     };
   },
@@ -94,9 +94,6 @@ export default {
     createVisible(fieldName, val = false) {
       this.visible = Object.assign({}, this.visible, { [fieldName]: val });
     },
-    createText(fieldName, val) {
-      this.text = Object.assign({}, this.text, { [fieldName]: val });
-    },
     SELECT(option) {
       const { form } = this;
       const { label, fieldName, options = {}, placeholder = `请选择${label}`, disabled, onChange = noop } = option;
@@ -160,22 +157,14 @@ export default {
           />
           <van-popup v-model={this.visible[fieldName]} round position="bottom" get-container="body" style={{ width: '100%' }}>
             <div class="van-picker">
-              <div class="van-picker__toolbar">
-                <button type="button" class="van-picker__cancel" onClick={() => this.createVisible(fieldName, !1)}>
-                  取消
-                </button>
-                <div class="van-ellipsis van-picker__title">{placeholder}</div>
-                <button
-                  type="button"
-                  class="van-picker__confirm"
-                  onClick={() => {
-                    form[fieldName] = this.$refs[`select-${fieldName}`].GET_VALUE();
-                    this.createVisible(fieldName, !1);
-                  }}
-                >
-                  确认
-                </button>
-              </div>
+              <TabHeader
+                title={placeholder}
+                onCancel={() => this.createVisible(fieldName, !1)}
+                onConfirm={() => {
+                  form[fieldName] = this.$refs[`select-${fieldName}`].GET_VALUE();
+                  this.createVisible(fieldName, !1);
+                }}
+              />
             </div>
             <div class="bi-filter__multiple_select">{this.visible[fieldName] && <SelectPanel ref={`select-${fieldName}`} value={form[fieldName]} itemList={itemList} />}</div>
           </van-popup>
@@ -186,11 +175,12 @@ export default {
       const { form } = this;
       const { label, fieldName, options = {}, placeholder = `请选择${label}`, disabled, onChange = noop } = option;
       const { itemList = [] } = options;
+      const fieldValues = this.deepFindValues(itemList, this.form[fieldName]);
       const cascaderValue = form[fieldName] ? form[fieldName].slice(form[fieldName].lastIndexOf(',') + 1) : form[fieldName];
       return (
         <div>
           <van-field
-            value={this.text[fieldName]}
+            value={fieldValues.map(option => option.text).join('/')}
             readonly
             disabled={disabled}
             placeholder={placeholder}
@@ -208,8 +198,6 @@ export default {
               onClose={() => this.createVisible(fieldName, !1)}
               onFinish={({ selectedOptions }) => {
                 this.createVisible(fieldName, !1);
-                this.createText(fieldName, selectedOptions.map(option => option.text).join('/'));
-                // 级联选择器数据格式，待定
                 this.form[fieldName] = selectedOptions.map(option => option.value).join(',');
                 onChange(this.form[fieldName]);
               }}
@@ -217,6 +205,69 @@ export default {
           </van-popup>
         </div>
       );
+    },
+    MULTIPLE_CASCADER(option) {
+      const { form } = this;
+      const { label, fieldName, rows = [], options = {}, placeholder, disabled, onChange = noop } = option;
+      const { itemList = [] } = options;
+      // 获取下拉列表
+      const getItemList = index => {
+        if (index === 0) {
+          return itemList.map(x => ({ text: x.text, value: x.value, disabled: x.disabled }));
+        }
+        const result = [];
+        form[fieldName][index - 1].forEach(val => {
+          let target = this.deepFind(itemList, val);
+          if (!target) return;
+          if (Array.isArray(target.children)) {
+            result.push(...target.children.map(x => ({ text: x.text, value: x.value, disabled: x.disabled })));
+          }
+        });
+        return result;
+      };
+      // 回显数据
+      const createFieldText = index => {
+        const result = [];
+        (form[fieldName][index] ?? []).forEach(val => {
+          let target = this.deepFind(itemList, val);
+          if (!target) return;
+          result.push(target.text);
+        });
+        return result.join(',');
+      };
+      const vItems = rows.map((x, i) => {
+        const { onChange = noop } = x;
+        return (
+          <div>
+            <van-field
+              value={createFieldText(i)}
+              readonly
+              disabled={disabled}
+              placeholder={`请选择${x.label}`}
+              onClick={() => {
+                if (disabled) return;
+                this.createVisible(`${fieldName}_${x.label}`, !0);
+              }}
+            />
+            <van-popup v-model={this.visible[`${fieldName}_${x.label}`]} round position="bottom" get-container="body" style={{ width: '100%' }}>
+              <div class="van-picker">
+                <TabHeader
+                  title={`请选择${x.label}`}
+                  onCancel={() => this.createVisible(`${fieldName}_${x.label}`, !1)}
+                  onConfirm={() => {
+                    form[fieldName][i] = this.$refs[`multiple-cascader-${fieldName}_${x.label}`].GET_VALUE();
+                    this.createVisible(`${fieldName}_${x.label}`, !1);
+                  }}
+                />
+              </div>
+              <div class="bi-filter__multiple_select">
+                {this.visible[`${fieldName}_${x.label}`] && <SelectPanel ref={`multiple-cascader-${fieldName}_${x.label}`} value={form[fieldName][i]} itemList={getItemList(i)} />}
+              </div>
+            </van-popup>
+          </div>
+        );
+      });
+      return vItems;
     },
     RANGE_DATE(option) {
       const { form } = this;
@@ -531,6 +582,33 @@ export default {
           result[key] = isObject(value) && isObject(base[key]) ? this.difference(value, base[key]) : value;
         }
       });
+    },
+    deepFindValues(arr, str = '', depth = 0) {
+      const result = [];
+      arr.forEach(x => {
+        if (x.value == str.split(',')[depth]) {
+          result.push(x);
+        }
+        if (Array.isArray(x.children)) {
+          result.push(...this.deepFindValues(x.children, str, depth + 1));
+        }
+      });
+      return result;
+    },
+    deepFind(arr, mark) {
+      let res = null;
+      for (let i = 0; i < arr.length; i++) {
+        if (Array.isArray(arr[i].children)) {
+          res = this.deepFind(arr[i].children, mark);
+        }
+        if (res) {
+          return res;
+        }
+        if (arr[i].value === mark) {
+          return arr[i];
+        }
+      }
+      return res;
     }
   },
   render() {
