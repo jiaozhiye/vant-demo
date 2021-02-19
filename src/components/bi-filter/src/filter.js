@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-06-20 10:00:00
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2021-02-19 14:07:11
+ * @Last Modified time: 2021-02-19 14:40:06
  **/
 import { xor, intersection, transform, isEqual, isObject, cloneDeep } from 'lodash-es';
 import dayjs from 'dayjs';
@@ -21,6 +21,10 @@ export default {
     initialValue: {
       type: Object,
       default: () => ({})
+    },
+    formatValue: {
+      type: Function,
+      default: p => p
     }
   },
   data() {
@@ -78,9 +82,6 @@ export default {
       val = val ?? undefined;
       if (this.arrayTypes.includes(type)) {
         val = val ?? [];
-      }
-      if (type === 'CHECKBOX') {
-        val = val ?? options.falseValue ?? '0';
       }
       return val;
     },
@@ -216,7 +217,7 @@ export default {
           return itemList.map(x => ({ text: x.text, value: x.value, disabled: x.disabled }));
         }
         const result = [];
-        form[fieldName][index - 1].forEach(val => {
+        form[fieldName][index - 1]?.forEach(val => {
           let target = this.deepFind(itemList, val);
           if (!target) return;
           if (Array.isArray(target.children)) {
@@ -228,7 +229,7 @@ export default {
       // 回显数据
       const createFieldText = index => {
         const result = [];
-        (form[fieldName][index] ?? []).forEach(val => {
+        form[fieldName][index]?.forEach(val => {
           let target = this.deepFind(itemList, val);
           if (!target) return;
           result.push(target.text);
@@ -563,11 +564,11 @@ export default {
         });
     },
     submitHandle() {
-      this.$emit('submit', this.form);
+      this.$emit('submit', this.formatFormData(this.form));
     },
     resetHadnle() {
       this.form = cloneDeep(this.initialValues);
-      this.$emit('reset', this.form);
+      this.$emit('reset', this.formatFormData(this.form));
     },
     createButton() {
       return (
@@ -597,6 +598,21 @@ export default {
         });
     },
     // 工具方法
+    formatFormData(data) {
+      const form = {};
+      for (let key in data) {
+        form[key] = Array.isArray(data[key]) ? cloneDeep(data[key]) : data[key];
+        if (form[key] === '' || form[key] === null) {
+          form[key] = undefined;
+        }
+        if (key.includes('|') && Array.isArray(form[key])) {
+          let [start, end] = key.split('|');
+          form[start] = form[key][0];
+          form[end] = form[key][1];
+        }
+      }
+      return this.formatValue(form);
+    },
     difference(object, base) {
       return transform(object, (result, value, key) => {
         if (!isEqual(value ?? '', base[key] ?? '')) {
