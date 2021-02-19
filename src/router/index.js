@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2021-02-17 08:48:14
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2021-02-17 12:21:44
+ * @Last Modified time: 2021-02-18 08:43:07
  */
 import Vue from 'vue';
 import VueRouter from 'vue-router';
@@ -41,5 +41,3 @@ export default new VueRouter({
   routes,
   scrollBehavior: () => ({ y: 0 })
 });
-
-// 13504700841  王

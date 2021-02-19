@@ -7,7 +7,7 @@
       </template>
     </van-nav-bar>
     <bi-drawer v-model="show">
-      <bi-filter :list="filterList" />
+      <bi-filter :list="filterList" @submit="submitHandle" />
     </bi-drawer>
   </div>
 </template>
@@ -34,15 +34,69 @@ export default {
               {
                 text: '江苏省',
                 value: '320000',
-                children: [{ text: '南京市', value: '320100' }]
+                children: [
+                  { text: '南京市', value: '320100' },
+                  { text: '苏州市', value: '320101' }
+                ]
               }
             ]
           }
         },
         {
-          type: 'CASCADER',
-          label: '所在城市',
+          type: 'SELECT',
+          label: '单选',
+          fieldName: 'a1',
+          placeholder: '请选择所在地区',
+          options: {
+            itemList: [
+              {
+                text: '浙江省',
+                value: '330000'
+              },
+              {
+                text: '江苏省',
+                value: '320000'
+              }
+            ]
+          }
+        },
+        {
+          type: 'MULTIPLE_SELECT',
+          label: '多选',
+          fieldName: 'a2',
+          placeholder: '请选择所在地区',
+          options: {
+            itemList: [
+              {
+                text: '浙江省',
+                value: '330000'
+              },
+              {
+                text: '江苏省',
+                value: '320000'
+              }
+            ]
+          }
+        },
+        {
+          type: 'RANGE_DATE',
+          label: '日期区间',
           fieldName: 'b'
+        },
+        {
+          type: 'MONTH',
+          label: '月份',
+          fieldName: 'c'
+        },
+        {
+          type: 'YEAR',
+          label: '年份',
+          fieldName: 'd'
+        },
+        {
+          type: 'QUARTER',
+          label: '季度',
+          fieldName: 'f'
         }
       ]
     };
@@ -50,6 +104,9 @@ export default {
   methods: {
     clickHandle() {
       this.show = true;
+    },
+    submitHandle(data) {
+      console.log(11, data);
     }
   }
 };
