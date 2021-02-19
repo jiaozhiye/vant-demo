@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-06-20 10:00:00
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2021-02-19 14:40:06
+ * @Last Modified time: 2021-02-19 14:59:22
  **/
 import { xor, intersection, transform, isEqual, isObject, cloneDeep } from 'lodash-es';
 import dayjs from 'dayjs';
@@ -237,15 +237,16 @@ export default {
         return result.join(',');
       };
       const checkFormValue = (arr, index) => {
+        const nextIndex = index + 1;
         arr.forEach(val => {
           const target = this.deepFind(itemList, val);
-          if (form[fieldName][index + 1]?.length && Array.isArray(target.children)) {
+          if (form[fieldName][nextIndex]?.length && Array.isArray(target.children)) {
             const tmp = intersection(
-              form[fieldName][index + 1],
+              form[fieldName][nextIndex],
               target.children.map(x => x.value)
             );
-            form[fieldName][index + 1] = form[fieldName][index + 1].filter(x => !tmp.includes(x));
-            checkFormValue(tmp, index + 1);
+            form[fieldName][nextIndex] = form[fieldName][nextIndex].filter(x => !tmp.includes(x));
+            checkFormValue(tmp, nextIndex);
           }
         });
       };

@@ -41,7 +41,7 @@
 | ----------- | ----------------------------------------------------- | ------------------- | -------- |
 | type        | 表单类型                                              | [配置项](#formType) | string   | - |
 | label       | 标题名称                                              | string              | -        |
-| fieldName   | 表单项字段 key，不能重复                              | string              | -        |
+| fieldName   | 表单项字段 key，不能重复，RANGE_DATE 支持竖线写法     | string              | -        |
 | placeholder | 表单元素的提示文字                                    | string              | -        |
 | disabled    | 是否禁用                                              | boolean             | false    |
 | hidden      | 是否隐藏表单项                                        | boolean             | false    |
@@ -75,3 +75,161 @@
 | children | 用于级联组件，可选 | array            | -      |
 
 `示例代码`
+
+```bash
+# template
+<template>
+  <bi-drawer v-model="visible">
+    <bi-filter :list="filterList" @submit="submitHandle" />
+  </bi-drawer>
+</template>
+
+# js
+export default {
+  data() {
+    return {
+      filterList: this.createFilterList(),
+    };
+  },
+  methods: {
+    createFilterList() {
+      return [
+        {
+          type: 'CASCADER',
+          label: '级联-单选',
+          fieldName: 'a',
+          placeholder: '请选择所在地区',
+          options: {
+            itemList: [
+              {
+                text: '浙江省',
+                value: '330000',
+                children: [{ text: '杭州市', value: '330100' }]
+              },
+              {
+                text: '江苏省',
+                value: '320000',
+                children: [
+                  { text: '南京市', value: '320100' },
+                  { text: '苏州市', value: '320101', children: [{ text: '沧浪区', value: '320502' }] }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          type: 'MULTIPLE_CASCADER',
+          label: '级联-多选',
+          fieldName: 'b',
+          placeholder: '请选择所在地区',
+          rows: [
+            {
+              label: '大区',
+              onChange: val => {}
+            },
+            {
+              label: '小区',
+              onChange: () => {}
+            },
+            {
+              label: '经销商',
+              onChange: () => {}
+            }
+          ],
+          options: {
+            itemList: [
+              {
+                text: '浙江省',
+                value: '330000',
+                children: [
+                  {
+                    text: '杭州市',
+                    value: '330100',
+                    children: [
+                      { text: '上城区', value: '330102' },
+                      { text: '下城区', value: '330103' }
+                    ]
+                  }
+                ]
+              },
+              {
+                text: '江苏省',
+                value: '320000',
+                children: [
+                  {
+                    text: '南京市',
+                    value: '320100',
+                    children: [{ text: '玄武区', value: '320102' }]
+                  },
+                  {
+                    text: '苏州市',
+                    value: '320101',
+                    children: [{ text: '沧浪区', value: '320502' }]
+                  }
+                ]
+              }
+            ]
+          },
+          onChange: val => {}
+        },
+        {
+          type: 'SELECT',
+          label: '单选',
+          fieldName: 'c',
+          placeholder: '请选择所在地区',
+          options: {
+            itemList: [
+              {
+                text: '浙江省',
+                value: '330000'
+              },
+              {
+                text: '江苏省',
+                value: '320000'
+              }
+            ]
+          }
+        },
+        {
+          type: 'MULTIPLE_SELECT',
+          label: '多选',
+          fieldName: 'd',
+          placeholder: '请选择所在地区',
+          options: {
+            itemList: [
+              {
+                text: '浙江省',
+                value: '330000'
+              },
+              {
+                text: '江苏省',
+                value: '320000'
+              }
+            ]
+          }
+        },
+        {
+          type: 'RANGE_DATE',
+          label: '日期区间',
+          fieldName: 'startData|endData'
+        },
+        {
+          type: 'MONTH',
+          label: '月份',
+          fieldName: 'f'
+        },
+        {
+          type: 'YEAR',
+          label: '年份',
+          fieldName: 'g'
+        },
+        {
+          type: 'QUARTER',
+          label: '季度',
+          fieldName: 'h'
+        }
+      ];
+    },
+  }
+};
+```

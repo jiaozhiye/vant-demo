@@ -6,7 +6,7 @@
         <van-icon name="ellipsis" size="18" style="padding: 5px; margin-right: -5px;" />
       </template>
     </van-nav-bar>
-    <bi-drawer v-model="show">
+    <bi-drawer v-model="visible">
       <bi-filter :list="filterList" @submit="submitHandle" />
     </bi-drawer>
   </div>
@@ -17,7 +17,7 @@ export default {
   name: 'Demo1',
   data() {
     return {
-      show: false,
+      visible: false,
       filterList: [
         {
           type: 'CASCADER',
@@ -95,9 +95,7 @@ export default {
               }
             ]
           },
-          onChange: val => {
-            console.log(111, val);
-          }
+          onChange: val => {}
         },
         {
           type: 'SELECT',
@@ -160,7 +158,7 @@ export default {
   },
   methods: {
     clickHandle() {
-      this.show = true;
+      this.visible = true;
     },
     submitHandle(data) {
       console.log(11, data);
