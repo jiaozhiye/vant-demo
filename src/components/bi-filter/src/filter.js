@@ -2,7 +2,7 @@
  * @Author: 焦质晔
  * @Date: 2019-06-20 10:00:00
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2021-02-19 16:16:47
+ * @Last Modified time: 2021-02-19 16:26:52
  **/
 import { xor, intersection, transform, isEqual, isObject, cloneDeep } from 'lodash-es';
 import dayjs from 'dayjs';
@@ -21,10 +21,6 @@ export default {
     initialValue: {
       type: Object,
       default: () => ({})
-    },
-    formatValue: {
-      type: Function,
-      default: p => p
     }
   },
   data() {
@@ -615,7 +611,7 @@ export default {
           form[end] = form[key][1];
         }
       }
-      return this.formatValue(form);
+      return form;
     },
     difference(object, base) {
       return transform(object, (result, value, key) => {
