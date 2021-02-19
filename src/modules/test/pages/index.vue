@@ -50,7 +50,7 @@ export default {
           rows: [
             {
               label: '大区',
-              onChange: () => {}
+              onChange: val => {}
             },
             {
               label: '小区',
@@ -73,6 +73,9 @@ export default {
                 ]
               }
             ]
+          },
+          onChange: val => {
+            console.log(111, val);
           }
         },
         {

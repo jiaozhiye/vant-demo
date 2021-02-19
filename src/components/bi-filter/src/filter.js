@@ -2,9 +2,9 @@
  * @Author: 焦质晔
  * @Date: 2019-06-20 10:00:00
  * @Last Modified by: 焦质晔
- * @Last Modified time: 2021-02-19 12:29:27
+ * @Last Modified time: 2021-02-19 14:07:11
  **/
-import { xor, transform, isEqual, isObject, cloneDeep } from 'lodash-es';
+import { xor, intersection, transform, isEqual, isObject, cloneDeep } from 'lodash-es';
 import dayjs from 'dayjs';
 import SelectPanel from './select-panel';
 import TabHeader from './tab-header';
@@ -235,8 +235,21 @@ export default {
         });
         return result.join(',');
       };
+      const checkFormValue = (arr, index) => {
+        arr.forEach(val => {
+          const target = this.deepFind(itemList, val);
+          if (form[fieldName][index + 1]?.length && Array.isArray(target.children)) {
+            const tmp = intersection(
+              form[fieldName][index + 1],
+              target.children.map(x => x.value)
+            );
+            form[fieldName][index + 1] = form[fieldName][index + 1].filter(x => !tmp.includes(x));
+            checkFormValue(tmp, index + 1);
+          }
+        });
+      };
       const vItems = rows.map((x, i) => {
-        const { onChange = noop } = x;
+        const { onChange: onItemChange = noop } = x;
         return (
           <div>
             <van-field
@@ -255,8 +268,15 @@ export default {
                   title={`请选择${x.label}`}
                   onCancel={() => this.createVisible(`${fieldName}_${x.label}`, !1)}
                   onConfirm={() => {
-                    form[fieldName][i] = this.$refs[`multiple-cascader-${fieldName}_${x.label}`].GET_VALUE();
+                    const values = this.$refs[`multiple-cascader-${fieldName}_${x.label}`].GET_VALUE();
+                    // 移除了元素
+                    if (form[fieldName][i]?.length > values.length) {
+                      checkFormValue(xor(form[fieldName][i], values), i);
+                    }
+                    form[fieldName][i] = values;
                     this.createVisible(`${fieldName}_${x.label}`, !1);
+                    onItemChange(form[fieldName][i]);
+                    onChange(form[fieldName]);
                   }}
                 />
               </div>
@@ -547,6 +567,7 @@ export default {
     },
     resetHadnle() {
       this.form = cloneDeep(this.initialValues);
+      this.$emit('reset', this.form);
     },
     createButton() {
       return (
