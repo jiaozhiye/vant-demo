@@ -36,37 +36,9 @@ $ npm run build
 注意：npm 依赖需要统一管理，不允许私自安装；公共的表单校验规则统一管理
 ```
 
-## 组件列表
+### 自定义主题
 
-```
-- Anchor 锚点组件
-- BaseDialog 模态框组件，支持子组件的销毁
-- BasePrint 基于 Lodop 插件的打印组件
-- BaseTable 表格组件
-- BreakSpace 功能模块的分隔符组件
-- ButtonArea 功能按钮区的容器组件
-- ClientPrint 客户端打印组件
-- CountUp 数字计数动画组件
-- DownloadFile 文件导出及下载组件
-- Drawer 抽屉组件，支持子组件的销毁
-- FormPanel 表单操作的功能组件
-- JsonToExcel 导出 excel/csv 组件
-- LazyLoadTab 选项卡的按需/动态加载
-- MultiuseButton 多功能按钮的组件，可实现权限控制及 ajax 防止重复提交
-- Pinyin 中文字符转换成拼音插件
-- PortalPage 对接大众 portal 系统组件
-- Qrcode 生成二维码组件
-- SearchHelper 搜索帮助组件
-- Spin 加载中组件
-- SuperTabs 选项卡组件，支持动画切换及顶部插槽扩展功能
-- Tinymce 富文本编辑器组件
-- TopFilter 页面头部筛选组件
-- UploadCropper 图片上传组件，支持图片的裁剪和压缩
-- UploadFile 附件上传组件
-- VirtualScroll 虚拟滚动组件
-- VirtualTable 新的表格组件，可支持 20w 数据渲染
-- WebPrint 浏览器的 pdf 打印组件
-```
+修改 build/utils.js 第 100 行代码，主题定义方式，参考 https://youzan.github.io/vant/#/zh-CN/theme
 
 ## 目录结构
 
